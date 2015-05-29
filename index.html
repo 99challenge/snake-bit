@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+    <canvas width=300 height=300></canvas>
+    <script>
+        (function(){
+            var c=document.getElementsByTagName('canvas')[0], a=c.getContext('2d'), sz=300,
+            s=[{x:15, y:5},{x:10, y:5},{x:5, y:5}],
+            rnd=function(max){return Math.floor(Math.random()*((max/5)+1))*5},
+            dir='r', i, rx=rnd(sz), ry=rnd(sz), tm,
+            kph=function(e){
+                var kc=e.keyCode, tmp=dir;
+                dir=kc==38&&dir!='d'?'u':kc==40&&dir!='u'?'d':kc==37&&dir!='r'?'l':kc==39&&dir!='l'?'r':null;
+                dir==null&&(dir=tmp);
+            },
+            grow=function(){
+                var v=dir=='u'||dir=='d'?'y':'x', hm=dir=='d'||dir=='r'?-5:5, lst=s[s.length-1];
+                s.push({x:v=='x'?lst.x+hm:lst.x,y:v=='y'?lst.y+hm:lst.y});
+            },
+            loop=function(){
+                a.clearRect(0,0,c.width,c.height);
+                a.fillStyle='#ff0';
+                a.fillRect(rx,ry,5,5);
+                a.fillStyle='#fff';
+                for(i=s.length-1;i>0;i--){
+                    s[i].y=s[i-1].y;
+                    s[i].x=s[i-1].x;
+                }
+                s[0][dir=='u'||dir=='d'?'y':'x']+=dir=='u'||dir=='l'?-5:5;
+                for(i=0; i<s.length; i++) a.fillRect(s[i].x, s[i].y, 5, 5);
+                s[0].x==rx&&s[0].y==ry&&(rx=rnd(sz))&&(ry=rnd(sz))&&grow();
+                (s[0].x >= sz || s[0].x <= 0 || s[0].y >= sz || s[0].y <= 0)&&console.log('You lost');
+            };
+
+            c.style.position = 'absolute';
+            c.style.top = innerHeight/2-sz/2+'px';
+            c.style.left = innerWidth/2-sz/2+'px';
+            c.style.backgroundColor = '#000';
+            window.addEventListener('keyup', kph);
+            tm = setInterval(loop, 60);
+        })();
+    </script>
+</html>
